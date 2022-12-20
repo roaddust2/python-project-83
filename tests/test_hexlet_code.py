@@ -1,4 +1,4 @@
-from hexlet_code import __version__
+from page_analyzer import __version__
 
 
 def test_version():
