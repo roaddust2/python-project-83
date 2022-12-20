@@ -1,6 +1,17 @@
 {% extends "base.html" %}
-{% block title %}Index{% endblock %}
-{% block content %}
-  <h1>Index</h1>
-  <p>Главная страница</p>
+{% block title %}Анализатор страниц{% endblock %}
+{% block main %}
+<div class="container-lg mt-3">
+  <h1></h1>
+  <div class="row">
+      <div class="col-12 col-md-10 col-lg-8 mx-auto border rounded-3 bg-light p-5">
+          <h1 class="display-3">Анализатор страниц</h1>
+          <p class="lead">Бесплатно проверяйте сайты на SEO пригодность</p>
+          <form class="d-flex justify-content-center" action="/urls" method="post" requiried="">
+            <input class="form-control form-control-lg" type="text" name="url" placeholder="https://www.example.com" value="">
+            <input class="btn btn-primary  btn-lg ms-3 px-5 text-uppercase mx-3" type="submit" value="Проверить">
+          </form>
+      </div>
+  </div>
+</div>
 {% endblock %}
