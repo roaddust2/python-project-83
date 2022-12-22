@@ -18,7 +18,7 @@ def add_url(name: str):
     """
     if not validators.url(name):
         return 'IncorrectUrl'
-    
+
     UniqueViolation = errors.lookup('23505')
     conn = psycopg2.connect(DATABASE_URL)
     cur = conn.cursor()
@@ -40,8 +40,6 @@ def add_url(name: str):
         cur.close()
         conn.close()
         return 'UniqueViolation'
-    
-    
 
 
 def get_urls() -> list:
