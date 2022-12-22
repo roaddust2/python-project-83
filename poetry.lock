@@ -46,6 +46,14 @@ tomli = {version = "*", optional = true, markers = "python_full_version <= \"3.1
 toml = ["tomli"]
 
 [[package]]
+name = "decorator"
+version = "5.1.1"
+description = "Decorators for Humans"
+category = "main"
+optional = false
+python-versions = ">=3.5"
+
+[[package]]
 name = "exceptiongroup"
 version = "1.0.4"
 description = "Backport of PEP 654 (exception groups)"
@@ -168,6 +176,14 @@ dev = ["pre-commit", "tox"]
 testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
+name = "psycopg2-binary"
+version = "2.9.5"
+description = "psycopg2 - Python-PostgreSQL Database Adapter"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[[package]]
 name = "pycodestyle"
 version = "2.10.0"
 description = "Python style guide checker"
@@ -238,6 +254,20 @@ optional = false
 python-versions = ">=3.7"
 
 [[package]]
+name = "validators"
+version = "0.20.0"
+description = "Python Data Validation for Humans™."
+category = "main"
+optional = false
+python-versions = ">=3.4"
+
+[package.dependencies]
+decorator = ">=3.4.0"
+
+[package.extras]
+test = ["pytest (>=2.2.3)", "flake8 (>=2.4.0)", "isort (>=4.2.2)"]
+
+[[package]]
 name = "werkzeug"
 version = "2.2.2"
 description = "The comprehensive WSGI web application library."
@@ -254,13 +284,17 @@ watchdog = ["watchdog"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "c339fff1c5fcaddbc68463b8eed8c4d8bfc6f37a0dbf3bcc697d15d423624bc6"
+content-hash = "9f61023b1ec312cf4129a7583e6da5244d5d8d1aff6901698ee84a53a1f645b5"
 
 [metadata.files]
 attrs = []
 click = []
 colorama = []
 coverage = []
+decorator = [
+    {file = "decorator-5.1.1-py3-none-any.whl", hash = "sha256:b8c3f85900b9dc423225913c5aace94729fe1fa9763b38939a95226f02d37186"},
+    {file = "decorator-5.1.1.tar.gz", hash = "sha256:637996211036b6385ef91435e4fae22989472f9d571faba8927ba8253acbc330"},
+]
 exceptiongroup = []
 flake8 = []
 flask = []
@@ -278,6 +312,7 @@ pluggy = [
     {file = "pluggy-1.0.0-py2.py3-none-any.whl", hash = "sha256:74134bbf457f031a36d68416e1509f34bd5ccc019f0bcc952c7b909d06b37bd3"},
     {file = "pluggy-1.0.0.tar.gz", hash = "sha256:4224373bacce55f955a878bf9cfa763c1e360858e330072059e10bad68531159"},
 ]
+psycopg2-binary = []
 pycodestyle = []
 pyflakes = []
 pytest = []
@@ -287,4 +322,5 @@ tomli = [
     {file = "tomli-2.0.1-py3-none-any.whl", hash = "sha256:939de3e7a6161af0c887ef91b7d41a53e7c5a1ca976325f429cb46ea9bc30ecc"},
     {file = "tomli-2.0.1.tar.gz", hash = "sha256:de526c12914f0c550d15924c62d72abc48d6fe7364aa87328337a31007fe8a4f"},
 ]
+validators = []
 werkzeug = []
