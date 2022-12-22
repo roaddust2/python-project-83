@@ -9,7 +9,7 @@ from flask import (
     get_flashed_messages
 )
 from dotenv import load_dotenv
-import page_analyzer.db
+import page_analyzer.db as db
 
 load_dotenv()
 
@@ -25,7 +25,7 @@ def index():
 
 @app.get('/urls')
 def urls_get():
-    rows = page_analyzer.db.get_urls()
+    rows = db.get_urls()
 
     return render_template(
         'urls.html',
@@ -36,7 +36,7 @@ def urls_get():
 @app.post('/urls')
 def url_post():
     input = request.form.to_dict()
-    result = page_analyzer.db.add_url(input['url'])
+    result = db.add_url(input['url'])
     match result:
         case 'IncorrectUrl':
             flash('Некорректный URL', 'alert-danger')
@@ -48,7 +48,7 @@ def url_post():
             )
         case 'UniqueViolation':
             flash('Страница уже существует', 'alert-info')
-            id = page_analyzer.db.find_url_by_name(input['url']).get('id')
+            id = db.find_url_by_name(input['url']).get('id')
             return redirect(url_for('url_get', id=id))
         case _:
             flash('Страница успешно добавлена', 'alert-success')
@@ -57,7 +57,7 @@ def url_post():
 
 @app.get('/urls/<int:id>')
 def url_get(id):
-    row = page_analyzer.db.find_url_by_id(id)
+    row = db.find_url_by_id(id)
     messages = get_flashed_messages(with_categories=True)
 
     return render_template(
