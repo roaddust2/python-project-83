@@ -43,7 +43,7 @@ def add_url(name: str):
         return 'UniqueViolation'
 
 
-def add_check(id: int):
+def add_check(id: int, response: int):
     """
     Function that inserts url-check into database,
     table: url_checks
@@ -54,10 +54,10 @@ def add_check(id: int):
     cur = conn.cursor()
     cur.execute(
         """
-        INSERT INTO url_checks (url_id, created_at)
-        VALUES (%(id)s, %(created_at)s);
+        INSERT INTO url_checks (url_id, status_code, created_at)
+        VALUES (%(id)s, %(status_code)s, %(created_at)s);
         """,
-        {'id': id, 'created_at': datetime.now()})
+        {'id': id, 'status_code': response, 'created_at': datetime.now()})
     conn.commit()
     cur.close()
     conn.close()

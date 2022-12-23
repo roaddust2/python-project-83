@@ -10,6 +10,7 @@ from flask import (
 )
 from dotenv import load_dotenv
 import page_analyzer.db as db
+import page_analyzer.check as check
 
 load_dotenv()
 
@@ -70,5 +71,10 @@ def url_get(id):
 
 @app.post('/urls/<int:id>/checks')
 def url_check(id):
-    db.add_check(id)
+    row = db.find_url_by_id(id)
+    response = check.get_status_code(row['name'])
+    if response:
+        db.add_check(id, response)
+        return redirect(url_for('url_get', id=id))
+    flash('Произошла ошибка при проверке', 'alert-danger')
     return redirect(url_for('url_get', id=id))
