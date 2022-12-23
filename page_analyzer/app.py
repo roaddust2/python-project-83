@@ -74,7 +74,13 @@ def url_check(id):
     row = db.find_url_by_id(id)
     response = check.get_status_code(row['name'])
     if response:
-        db.add_check(id, response)
+        page = check.get_data(row['name'])
+        db.add_check(
+            id,
+            response,
+            page['h1'],
+            page['title'],
+            page['content'])
         return redirect(url_for('url_get', id=id))
     flash('Произошла ошибка при проверке', 'alert-danger')
     return redirect(url_for('url_get', id=id))
