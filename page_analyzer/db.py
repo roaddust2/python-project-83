@@ -12,7 +12,8 @@ DATABASE_URL = os.getenv('DATABASE_URL')
 
 def add_url(name: str):
     """
-    Function that adds url into database
+    Function that inserts url into database,
+    table: urls
     Keyword arguments:
         name : str - valid url for example 'https://www.example.com'
     """
@@ -42,9 +43,30 @@ def add_url(name: str):
         return 'UniqueViolation'
 
 
+def add_check(id: int):
+    """
+    Function that inserts url-check into database,
+    table: url_checks
+    Keyword arguments:
+        id : int - id of url, referenses to urls (id)
+    """
+    conn = psycopg2.connect(DATABASE_URL)
+    cur = conn.cursor()
+    cur.execute(
+        """
+        INSERT INTO url_checks (url_id, created_at)
+        VALUES (%(id)s, %(created_at)s);
+        """,
+        {'id': id, 'created_at': datetime.now()})
+    conn.commit()
+    cur.close()
+    conn.close()
+
+
 def get_urls() -> list:
     """
-    Function that returns urls from database
+    Function that returns urls from database,
+    table: urls
     """
     conn = psycopg2.connect(DATABASE_URL)
     cur = conn.cursor()
@@ -52,6 +74,26 @@ def get_urls() -> list:
     output = cur.fetchall()
     cur.close()
     conn.close()
+    return output
+
+
+def get_checks(id) -> list:
+    """
+    Function that returns checks by url from database,
+    table: url_checks
+    Keyword arguments:
+        id : int - id of url
+    """
+    conn = psycopg2.connect(DATABASE_URL)
+    cur = conn.cursor()
+    cur.execute(
+        """SELECT * FROM url_checks
+        WHERE url_id = %(id)s;""",
+        {'id': id})
+    result = cur.fetchall()
+    cur.close()
+    conn.close()
+    output = list([item[:-1] + (ts_to_date(item[-1]),) for item in result])
     return output
 
 
@@ -79,11 +121,11 @@ def find_url_by_id(id: int) -> dict:
         }
 
 
-def find_url_by_name(name: int) -> dict:
+def find_url_by_name(name: str) -> dict:
     """
-    Function that returns row from database by id
+    Function that returns row from database by name
     Keyword arguments:
-        id : int - id of row
+        name : str - name of url in a row
     """
     conn = psycopg2.connect(DATABASE_URL)
     cur = conn.cursor()
@@ -93,11 +135,14 @@ def find_url_by_name(name: int) -> dict:
         {'name': name})
     row = cur.fetchone()
     id, name, created_at = row
-    created_at = created_at.timestamp()
     cur.close()
     conn.close()
     return {
         'id': id,
         'name': name,
-        'created_at': date.fromtimestamp(created_at)
+        'created_at': ts_to_date(created_at)
         }
+
+
+def ts_to_date(ts):
+    return date.fromtimestamp(ts.timestamp())

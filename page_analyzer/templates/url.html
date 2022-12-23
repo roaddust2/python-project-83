@@ -9,7 +9,7 @@
 {% block content %}
 <h1>Сайт {{url.name}}</h1>
 <div class="table-responsive">
-    <table class="table table-bordered table-hover text-nowrap">
+    <table class="table table-bordered table-hover text-nowrap" data-test="url">
         <tbody>
             <tr>
                 <td>ID</td>
@@ -27,11 +27,11 @@
     </table>
 </div>
 <h2 class="mt-5 mb-3">Проверки</h2>
-<form action="/urls/1/checks" method="post">
+<form action="/urls/{{url.id}}/checks" method="post">
     <input type="submit" class="btn btn-primary" value="Запустить проверку">
 </form>
 <div>
-    <table class="table table-bordered table-hover mt-2">
+    <table class="table table-bordered table-hover mt-2" data-test="checks">
         <tbody>
             <tr>
                 <th>ID</th>
@@ -41,6 +41,16 @@
                 <th>description</th>
                 <th>Дата создания</th>
             </tr>
+            {% for check in checks %}
+            <tr>
+                <td>{{check[0]}}</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>{{check[6]}}</td>
+            </tr>
+            {% endfor %}
         </tbody>
     </table>
 </div>

@@ -26,7 +26,6 @@ def index():
 @app.get('/urls')
 def urls_get():
     rows = db.get_urls()
-
     return render_template(
         'urls.html',
         urls=rows
@@ -37,6 +36,7 @@ def urls_get():
 def url_post():
     input = request.form.to_dict()
     result = db.add_url(input['url'])
+
     match result:
         case 'IncorrectUrl':
             flash('Некорректный URL', 'alert-danger')
@@ -59,9 +59,16 @@ def url_post():
 def url_get(id):
     row = db.find_url_by_id(id)
     messages = get_flashed_messages(with_categories=True)
-
+    checks = db.get_checks(id)
     return render_template(
         'url.html',
         url=row,
+        checks=checks,
         messages=messages
     )
+
+
+@app.post('/urls/<int:id>/checks')
+def url_check(id):
+    db.add_check(id)
+    return redirect(url_for('url_get', id=id))
