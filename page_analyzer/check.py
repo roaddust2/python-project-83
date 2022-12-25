@@ -19,17 +19,17 @@ def get_data(url: str) -> dict:
 
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'html.parser')
-    h1 = soup.h1.get_text()
-    title = soup.title.get_text()
+    h1 = soup.h1
+    title = soup.title
     content = soup.find(
         "meta", attrs={'name': 'description'}
         )
 
     page_text.update(
-        {'h1': h1}
+        {'h1': h1.get_text()}
         ) if h1 is not None else page_text.setdefault('h1', '')
     page_text.update(
-        {'title': title}
+        {'title': title.get_text()}
         ) if title is not None else page_text.setdefault('title', '')
     page_text.update(
         {'content': content["content"]}

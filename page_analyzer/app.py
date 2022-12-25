@@ -102,7 +102,7 @@ def url_get(id):
 def url_check(id):
     url = db.find_url(id)
     response = check.get_status_code(url['name'])
-    if response and response is not '500':
+    if response:
         page = check.get_data(url['name'])
         db.add_check({
                 'id': id,
