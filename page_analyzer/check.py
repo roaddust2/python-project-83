@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 
 
-def get_status_code(url: str) -> int:
+def get_status_code(url: str):
     try:
         response = requests.get(url)
         return response.status_code

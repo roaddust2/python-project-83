@@ -23,7 +23,6 @@ app.secret_key = os.getenv('SECRET_KEY')
 def normalize_url(url):
     url = urlparse(url)
     return url._replace(
-        scheme='https',
         path='',
         params='',
         query='',
