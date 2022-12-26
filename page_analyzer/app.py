@@ -110,6 +110,7 @@ def url_check(id):
                 'h1': page['h1'],
                 'title': page['title'],
                 'content': page['content']})
+        flash('Страница успешно проверена', 'alert-success')
         return redirect(url_for('url_get', id=id))
     flash('Произошла ошибка при проверке', 'alert-danger')
     return redirect(url_for('url_get', id=id))
