@@ -61,7 +61,7 @@ def url_post():
         return render_template(
             'index.html',
             url=url,
-            messages=messages)
+            messages=messages), 422
 
     url = normalize_url(url)
     exists = db.exist_url(url)
@@ -79,7 +79,7 @@ def url_post():
             return render_template(
                 'index.html',
                 url=url,
-                messages=messages)
+                messages=messages), 500
         case _:
             flash('Страница успешно добавлена', 'alert-success')
             return redirect(url_for('url_get', id=result))
