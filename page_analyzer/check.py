@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 def get_status_code(url: str):
     try:
         response = requests.get(url)
+        response.raise_for_status()
         return response.status_code
     except Exception:
         return
