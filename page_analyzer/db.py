@@ -118,10 +118,10 @@ def get_urls() -> list:
         url.update({'name': row[1]})
         url.update(
             {'date': ts_to_date(row[2])}
-            ) if row[2] is not None else url.setdefault('date', '')
+        ) if row[2] is not None else url.setdefault('date', '')
         url.update(
             {'status': row[3]}
-            ) if row[3] is not None else url.setdefault('status', '')
+        ) if row[3] is not None else url.setdefault('status', '')
         urls.append(url)
     return urls
 
@@ -152,13 +152,13 @@ def get_checks(id: int) -> list:
         check.update({'status': row[2]})
         check.update(
             {'h1': row[3]}
-            ) if row[3] is not None else check.setdefault('h1', '')
+        ) if row[3] is not None else check.setdefault('h1', '')
         check.update(
             {'title': row[4]}
-            ) if row[4] is not None else check.setdefault('title', '')
+        ) if row[4] is not None else check.setdefault('title', '')
         check.update(
             {'content': row[5]}
-            ) if row[5] is not None else check.setdefault('content', '')
+        ) if row[5] is not None else check.setdefault('content', '')
         check.update({'date': ts_to_date(row[6])})
         checks.append(check)
     return checks
@@ -187,7 +187,7 @@ def find_url(id: int) -> dict:
         'id': id,
         'name': name,
         'created_at': ts_to_date(created_at)
-        }
+    }
 
 
 def exist_url(value: str) -> tuple:

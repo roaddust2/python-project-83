@@ -104,11 +104,11 @@ def url_check(id):
     if response:
         page = check.get_data(url['name'])
         db.add_check({
-                'id': id,
-                'status_code': response,
-                'h1': page['h1'],
-                'title': page['title'],
-                'content': page['content']})
+            'id': id,
+            'status_code': response,
+            'h1': page['h1'],
+            'title': page['title'],
+            'content': page['content']})
         flash('Страница успешно проверена', 'alert-success')
         return redirect(url_for('url_get', id=id))
     flash('Произошла ошибка при проверке', 'alert-danger')
