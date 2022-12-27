@@ -81,7 +81,7 @@ def add_check(check: dict):
                         'title': check['title'],
                         'content': str(check['content']),
                         'created_at': datetime.now()}
-                    )
+                )
                 id = cur.fetchone()[0]
                 return id
     except psycopg2.Error:
