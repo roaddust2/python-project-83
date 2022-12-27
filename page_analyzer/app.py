@@ -9,10 +9,12 @@ from flask import (
     get_flashed_messages
 )
 from dotenv import load_dotenv
+import requests
+from requests.exceptions import HTTPError
 from validators import url as valid
 from urllib.parse import urlparse
 import page_analyzer.db as db
-import page_analyzer.check as check
+from bs4 import BeautifulSoup
 
 load_dotenv()
 
@@ -30,7 +32,7 @@ def normalize_url(url):
 
 
 @app.errorhandler(404)
-def page_not_found(e):
+def page_not_found():
     return render_template('errors/404.html'), 404
 
 
@@ -100,16 +102,48 @@ def url_get(id):
 @app.post('/urls/<int:id>/checks')
 def url_check(id):
     url = db.find_url(id)
-    response = check.get_status_code(url['name'])
-    if response:
-        page = check.get_data(url['name'])
+    response = requests.get(url['name'])
+    try:
+        response.raise_for_status()
+        page = get_page(url['name'])
         db.add_check({
             'id': id,
-            'status_code': response,
+            'status_code': response.status_code,
             'h1': page['h1'],
             'title': page['title'],
             'content': page['content']})
         flash('Страница успешно проверена', 'alert-success')
         return redirect(url_for('url_get', id=id))
-    flash('Произошла ошибка при проверке', 'alert-danger')
-    return redirect(url_for('url_get', id=id))
+    except HTTPError:
+        flash('Произошла ошибка при проверке', 'alert-danger')
+        return redirect(url_for('url_get', id=id))
+
+
+def get_page(url: str) -> dict:
+    """
+    Function that parses page and returns content in a dict
+    Keyword arguments:
+        url : str - valid url for example 'https://www.example.com'
+    """
+    page_text = {
+        'h1': '',
+        'title': '',
+        'content': ''
+    }
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, 'html.parser')
+    h1 = soup.h1
+    title = soup.title
+    content = soup.find(
+        "meta", attrs={'name': 'description'})
+
+    page_text.update(
+        {'h1': h1.get_text()}
+    ) if h1 is not None else page_text.setdefault('h1', '')
+    page_text.update(
+        {'title': title.get_text()}
+    ) if title is not None else page_text.setdefault('title', '')
+    page_text.update(
+        {'content': content["content"]}
+    ) if content is not None else page_text.setdefault('content', '')
+    return page_text
