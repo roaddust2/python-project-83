@@ -44,11 +44,11 @@
             {% for check in checks %}
             <tr>
                 <td>{{check.id}}</td>
-                <td>{{check.status}}</td>
+                <td>{{check.status_code}}</td>
                 <td>{{check.h1}}</td>
                 <td>{{check.title}}</td>
                 <td>{{check.content}}</td>
-                <td>{{check.date}}</td>
+                <td>{{check.created_at}}</td>
             </tr>
             {% endfor %}
         </tbody>

@@ -1,17 +1,11 @@
 import os
 from dotenv import load_dotenv
 import psycopg2
-from datetime import datetime, date
+from psycopg2.extras import NamedTupleCursor
+from datetime import datetime
 
 load_dotenv()
 DATABASE_URL = os.getenv('DATABASE_URL')
-
-
-def ts_to_date(ts):
-    """
-    Converting timestamp into date (YYYY-MM-DD)
-    """
-    return date.fromtimestamp(ts.timestamp())
 
 
 def add_url(name: str):
@@ -99,9 +93,15 @@ def get_urls() -> list:
         SELECT, LEFT JOIN
     """
     with psycopg2.connect(DATABASE_URL) as conn:
-        with conn.cursor() as cur:
+        with conn.cursor(cursor_factory=NamedTupleCursor) as cur:
             cur.execute(
-                """SELECT u.id, u.name, ch.created_at, ch.status_code
+                """SELECT
+                    u.id,
+                    u.name,
+                    COALESCE(
+                        CAST(
+                            DATE(ch.created_at) AS varchar), '') as created_at,
+                    COALESCE(ch.status_code, '') as status_code
                 FROM urls as u
                 LEFT JOIN url_checks AS ch
                 ON u.id = ch.url_id
@@ -111,19 +111,7 @@ def get_urls() -> list:
                 ORDER BY u.id;""")
             rows = cur.fetchall()
     conn.close()
-    urls = []
-    for row in rows:
-        url = {}
-        url.update({'id': row[0]})
-        url.update({'name': row[1]})
-        url.update(
-            {'date': ts_to_date(row[2])}
-        ) if row[2] is not None else url.setdefault('date', '')
-        url.update(
-            {'status': row[3]}
-        ) if row[3] is not None else url.setdefault('status', '')
-        urls.append(url)
-    return urls
+    return rows
 
 
 def get_checks(id: int) -> list:
@@ -137,31 +125,21 @@ def get_checks(id: int) -> list:
         SELECT
     """
     with psycopg2.connect(DATABASE_URL) as conn:
-        with conn.cursor() as cur:
+        with conn.cursor(cursor_factory=NamedTupleCursor) as cur:
             cur.execute(
-                """SELECT * FROM url_checks
-                WHERE url_id = %(id)s
-                ORDER BY id;""",
-                {'id': id})
+                """SELECT
+                id,
+                status_code,
+                COALESCE(h1, '') as h1,
+                COALESCE(title, '') as title,
+                COALESCE(description, '') as content,
+                DATE(created_at) as created_at
+                 FROM url_checks
+                WHERE url_id = %s
+                ORDER BY id;""", (id,))
             rows = cur.fetchall()
     conn.close()
-    checks = []
-    for row in rows:
-        check = {}
-        check.update({'id': row[0]})
-        check.update({'status': row[2]})
-        check.update(
-            {'h1': row[3]}
-        ) if row[3] is not None else check.setdefault('h1', '')
-        check.update(
-            {'title': row[4]}
-        ) if row[4] is not None else check.setdefault('title', '')
-        check.update(
-            {'content': row[5]}
-        ) if row[5] is not None else check.setdefault('content', '')
-        check.update({'date': ts_to_date(row[6])})
-        checks.append(check)
-    return checks
+    return rows
 
 
 def find_url(id: int) -> dict:
@@ -175,19 +153,14 @@ def find_url(id: int) -> dict:
         SELECT
     """
     with psycopg2.connect(DATABASE_URL) as conn:
-        with conn.cursor() as cur:
+        with conn.cursor(cursor_factory=NamedTupleCursor) as cur:
             cur.execute(
-                """SELECT * FROM urls
-                WHERE id = %(id)s;""",
-                {'id': id})
+                """SELECT id, name, DATE(created_at) as created_at
+                FROM urls
+                WHERE id = %s;""", (id,))
             row = cur.fetchone()
     conn.close()
-    id, name, created_at = row
-    return {
-        'id': id,
-        'name': name,
-        'created_at': ts_to_date(created_at)
-    }
+    return row
 
 
 def exist_url(value: str) -> tuple:
@@ -196,10 +169,7 @@ def exist_url(value: str) -> tuple:
     """
     with psycopg2.connect(DATABASE_URL) as conn:
         with conn.cursor() as cur:
-            cur.execute(
-                """SELECT id FROM urls
-                WHERE name = %(value)s;""",
-                {'value': value})
+            cur.execute("SELECT id FROM urls WHERE name = %s;", (value,))
             id = cur.fetchone()
     conn.close()
     if id is None:

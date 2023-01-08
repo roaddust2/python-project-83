@@ -10,7 +10,6 @@ from flask import (
 )
 from dotenv import load_dotenv
 import requests
-from requests.exceptions import HTTPError
 from validators import url as valid
 from urllib.parse import urlparse
 import page_analyzer.db as db
@@ -102,10 +101,10 @@ def url_get(id):
 @app.post('/urls/<int:id>/checks')
 def url_check(id):
     url = db.find_url(id)
-    response = requests.get(url['name'])
     try:
+        response = requests.get(url.name)
         response.raise_for_status()
-        page = get_page(url['name'])
+        page = get_page(url.name)
         db.add_check({
             'id': id,
             'status_code': response.status_code,
@@ -114,7 +113,7 @@ def url_check(id):
             'content': page['content']})
         flash('Страница успешно проверена', 'alert-success')
         return redirect(url_for('url_get', id=id))
-    except HTTPError:
+    except Exception:
         flash('Произошла ошибка при проверке', 'alert-danger')
         return redirect(url_for('url_get', id=id))
 
