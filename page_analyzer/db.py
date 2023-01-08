@@ -19,7 +19,7 @@ def add_url(name: str):
     Statements:
         INSERT INTO RETURNING
     """
-    if exist_url(name)[0]:
+    if exist_url(name):
         return None
     try:
         with psycopg2.connect(DATABASE_URL) as conn:
@@ -142,11 +142,11 @@ def get_checks(id: int) -> list:
     return rows
 
 
-def find_url(id: int) -> dict:
+def find_url(value) -> dict:
     """
-    Function that returns row in a dict from database by id.
+    Function that returns row from database
     Keyword arguments:
-        id : int - id of row
+        value - id or name of url
     Tables:
         urls
     Statements:
@@ -154,24 +154,30 @@ def find_url(id: int) -> dict:
     """
     with psycopg2.connect(DATABASE_URL) as conn:
         with conn.cursor(cursor_factory=NamedTupleCursor) as cur:
-            cur.execute(
-                """SELECT id, name, DATE(created_at) as created_at
-                FROM urls
-                WHERE id = %s;""", (id,))
-            row = cur.fetchone()
+            match value:
+                case int():
+                    cur.execute(
+                        """SELECT id, name, DATE(created_at) as created_at
+                        FROM urls
+                        WHERE id = %s;""", (value,))
+                    row = cur.fetchone()
+                case str():
+                    cur.execute(
+                        """SELECT id, name, DATE(created_at) as created_at
+                        FROM urls
+                        WHERE name = %s;""", (value,))
+                    row = cur.fetchone()
     conn.close()
     return row
 
 
-def exist_url(value: str) -> tuple:
+def exist_url(name: str) -> bool:
     """
-    Returns tuple (bool, id or None)
+    Returns True if exists, False if not
     """
     with psycopg2.connect(DATABASE_URL) as conn:
         with conn.cursor() as cur:
-            cur.execute("SELECT id FROM urls WHERE name = %s;", (value,))
-            id = cur.fetchone()
+            cur.execute("SELECT COUNT(*) FROM urls WHERE name = %s;", (name,))
+            result = cur.fetchone()
     conn.close()
-    if id is None:
-        return (False, id)
-    return (True, id[0])
+    return bool(result[0])

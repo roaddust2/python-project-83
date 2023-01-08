@@ -66,9 +66,9 @@ def url_post():
     url = normalize_url(url)
     exists = db.exist_url(url)
 
-    if exists[0]:
+    if exists:
         flash('Страница уже существует', 'alert-info')
-        return redirect(url_for('url_get', id=exists[1]))
+        return redirect(url_for('url_get', id=db.find_url(url).id))
 
     result = db.add_url(url)
 
