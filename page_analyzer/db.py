@@ -8,6 +8,10 @@ load_dotenv()
 DATABASE_URL = os.getenv('DATABASE_URL')
 
 
+def connect():
+    return psycopg2.connect(DATABASE_URL)
+
+
 def add_url(name: str):
     """
     Function that inserts url into database.
@@ -22,7 +26,7 @@ def add_url(name: str):
     if exist_url(name):
         return None
     try:
-        with psycopg2.connect(DATABASE_URL) as conn:
+        with connect() as conn:
             with conn.cursor() as cur:
                 cur.execute(
                     """
@@ -51,7 +55,7 @@ def add_check(check: dict):
         INSERT INTO RETURNING
     """
     try:
-        with psycopg2.connect(DATABASE_URL) as conn:
+        with connect() as conn:
             with conn.cursor() as cur:
                 cur.execute(
                     """INSERT INTO url_checks (
@@ -92,7 +96,7 @@ def get_urls() -> list:
     Statements:
         SELECT, LEFT JOIN
     """
-    with psycopg2.connect(DATABASE_URL) as conn:
+    with connect() as conn:
         with conn.cursor(cursor_factory=NamedTupleCursor) as cur:
             cur.execute(
                 """SELECT
@@ -124,7 +128,7 @@ def get_checks(id: int) -> list:
     Statements:
         SELECT
     """
-    with psycopg2.connect(DATABASE_URL) as conn:
+    with connect() as conn:
         with conn.cursor(cursor_factory=NamedTupleCursor) as cur:
             cur.execute(
                 """SELECT
@@ -152,7 +156,7 @@ def find_url(value) -> dict:
     Statements:
         SELECT
     """
-    with psycopg2.connect(DATABASE_URL) as conn:
+    with connect() as conn:
         with conn.cursor(cursor_factory=NamedTupleCursor) as cur:
             match value:
                 case int():
@@ -175,7 +179,7 @@ def exist_url(name: str) -> bool:
     """
     Returns True if exists, False if not
     """
-    with psycopg2.connect(DATABASE_URL) as conn:
+    with connect() as conn:
         with conn.cursor() as cur:
             cur.execute("SELECT COUNT(*) FROM urls WHERE name = %s;", (name,))
             result = cur.fetchone()
