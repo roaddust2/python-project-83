@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 import psycopg2
 from psycopg2.extras import NamedTupleCursor
 from datetime import datetime
+import logging
 
 load_dotenv()
 DATABASE_URL = os.getenv('DATABASE_URL')
@@ -23,8 +24,6 @@ def add_url(name: str):
     Statements:
         INSERT INTO RETURNING
     """
-    if exist_url(name):
-        return None
     try:
         with connect() as conn:
             with conn.cursor() as cur:
@@ -37,8 +36,9 @@ def add_url(name: str):
                     {'name': name, 'created_at': datetime.now()})
                 id = cur.fetchone()[0]
                 return id
-    except psycopg2.Error:
-        return None
+    except psycopg2.Error as err:
+        logging.error(err)
+        return err
     finally:
         conn.close()
 
@@ -82,8 +82,9 @@ def add_check(check: dict):
                 )
                 id = cur.fetchone()[0]
                 return id
-    except psycopg2.Error:
-        return None
+    except psycopg2.Error as err:
+        logging.error(err)
+        return err
     finally:
         conn.close()
 

@@ -14,11 +14,22 @@ from validators import url as valid
 from urllib.parse import urlparse
 import page_analyzer.db as db
 from bs4 import BeautifulSoup
+import logging
 
 load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY')
+
+# Logging configuration
+logging.basicConfig(
+    filename='logs.log',
+    filemode='w',
+    format='%(asctime)s %(levelname)s:%(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+    )
+
+logger = logging.getLogger(__name__)
 
 
 def normalize_url(url):
@@ -113,7 +124,8 @@ def url_check(id):
             'content': page['content']})
         flash('Страница успешно проверена', 'alert-success')
         return redirect(url_for('url_get', id=id))
-    except Exception:
+    except Exception as err:
+        logging.error(err)
         flash('Произошла ошибка при проверке', 'alert-danger')
         return redirect(url_for('url_get', id=id))
 
