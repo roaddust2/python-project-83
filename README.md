@@ -23,8 +23,6 @@ where you can add websites and treat them with small "SEO checks".
 * [beautifulsoup](https://code.launchpad.net/beautifulsoup)
 
 ### How it works
-**Demo:** https://python-project-83-production-934e.up.railway.app/  
-  
 <img src="https://user-images.githubusercontent.com/42116054/209537033-1985a59a-208c-4560-ab6b-213a75990471.png" width="600">  
   
 On this app, you can add sites with entering url on main page, then make "SEO check" to recieve basic information  about it.  
